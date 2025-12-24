@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>动物型性格测评</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #ffe6f2 0%, #ffccee 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 24px rgba(255, 105, 180, 0.15);
+            border: 2px solid #ff99cc;
+        }
+        h1 {
+            color: #d63384;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 26px;
+            font-weight: 600;
+        }
+        .intro {
+            color: #e64398;
+            line-height: 1.8;
+            margin-bottom: 30px;
+            font-size: 15px;
+            text-align: center;
+            padding: 0 10px;
+        }
+        .progress {
+            height: 8px;
+            background: #ffe6f2;
+            border-radius: 4px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            background: #ff66b2;
+            width: 0%;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        .question {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #fff0f7;
+            border-radius: 12px;
+            border-left: 4px solid #ff66b2;
+            display: none;
+        }
+        .question.active {
+            display: block;
+        }
+        .question p {
+            color: #d63384;
+            font-weight: 500;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        .options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .options label {
+            display: flex;
+            align-items: center;
+            padding: 10px 18px;
+            background: #ffffff;
+            border: 1px solid #ff99cc;
+            border-radius: 8px;
+            color: #e64398;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex: 1;
+            min-width: 120px;
+        }
+        .options label:hover {
+            background: #ffe6f2;
+            border-color: #ff66b2;
+        }
+        .options input {
+            margin-right: 8px;
+            accent-color: #ff66b2;
+        }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .nav-btn {
+            padding: 10px 20px;
+            background: #ff66b2;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            cursor: pointer;
+            flex: 1;
+            transition: background 0.3s ease;
+        }
+        .nav-btn:disabled {
+            background: #ffcce5;
+            cursor: not-allowed;
+        }
+        .nav-btn:hover:not(:disabled) {
+            background: #d63384;
+        }
+        .result {
+            margin-top: 30px;
+            padding: 30px;
+            background: #fff0f7;
+            border-radius: 20px;
+            display: none;
+            text-align: center;
+        }
+        .result h2 {
+            color: #d63384;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        .animal-icon {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            background: #ffe6f2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+        }
+        .result-desc {
+            color: #e64398;
+            line-height: 1.8;
+            font-size: 16px;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+        .result-tip {
+            background: #ffe6f2;
+            padding: 15px;
+            border-radius: 10px;
+            color: #d63384;
+            font-size: 14px;
+            text-align: left;
+        }
+        @media (max-width: 500px) {
+            .container {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 22px;
+            }
+            .options {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>动物型性格趣味测评</h1>
+        <div class="intro">
+            从日常行为选择中，解锁你的动物性格原型！狮子、大象、斑马、山羊，你更贴近哪一种？
+        </div>
+        <div class="progress">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <!-- 测试题目 -->
+        <div class="question-container">
+            <div class="question active" data-index="0">
+                <p>1. 团队合作时，你更倾向于？</p>
+                <div class="options">
+                    <label><input type="radio" name="q0" value="lion" required> 主导决策，安排分工</label>
+                    <label><input type="radio" name="q0" value="elephant"> 配合执行，稳定推进</label>
+                    <label><input type="radio" name="q0" value="zebra"> 跟随大众，协调氛围</label>
+                    <label><input type="radio" name="q0" value="goat"> 独立完成，避免依赖</label>
+                </div>
+                <div class="btn-group">
+                    <button class="nav-btn" disabled>上一题</button>
+                    <button class="nav-btn" onclick="nextQuestion()">下一题</button>
+                </div>
+            </div>
+
+            <div class="question" data-index="1">
+                <p>2. 面对突发问题，你的第一反应是？</p>
+                <div class="options">
+                    <label><input type="radio" name="q1" value="lion" required> 立刻解决，掌控局面</label>
+                    <label><input type="radio" name="q1" value="elephant"> 冷静分析，逐步处理</label>
+                    <label><input type="radio" name="q1" value="zebra"> 询问他人，参考意见</label>
+                    <label><input type="radio" name="q1" value="goat"> 独自扛下，尝试解决</label>
+                </div>
+                <div class="btn-group">
+                    <button class="nav-btn" onclick="prevQuestion()">上一题</button>
+                    <button class="nav-btn" onclick="nextQuestion()">下一题</button>
+                </div>
+            </div>
+
+            <div class="question" data-index="2">
+                <p>3. 社交场合中，你通常是？</p>
+                <div class="options">
+                    <label><input type="radio" name="q2" value="lion" required> 主动发言，成为焦点</label>
+                    <label><input type="radio" name="q2" value="elephant"> 耐心倾听，化解矛盾</label>
+                    <label><input type="radio" name="q2" value="zebra"> 融入群体，附和话题</label>
+                    <label><input type="radio" name="q2" value="goat"> 独处角落，少言寡语</label>
+                </div>
+                <div class="btn-group">
+                    <button class="nav-btn" onclick="prevQuestion()">上一题</button>
+                    <button class="nav-btn" onclick="nextQuestion()">下一题</button>
+                </div>
+            </div>
+
+            <div class="question" data-index="3">
+                <p>4. 制定目标后，你会？</p>
+                <div class="options">
+                    <label><input type="radio" name="q3" value="lion" required> 快速行动，追求高效</label>
+                    <label><input type="radio" name="q3" value="elephant"> 稳扎稳打，确保质量</label>
+                    <label><input type="radio" name="q3" value="zebra"> 跟随节奏，不争先也不落后</label>
+                    <label><input type="radio" name="q3" value="goat"> 坚持自我，按自己的步调完成</label>
+                </div>
+                <div class="btn-group">
+                    <button class="nav-btn" onclick="prevQuestion()">上一题</button>
+                    <button class="nav-btn" onclick="nextQuestion()">下一题</button>
+                </div>
+            </div>
+
+            <div class="question" data-index="4">
+                <p>5. 遇到挫折时，你更需要？</p>
+                <div class="options">
+                    <label><input type="radio" name="q4" value="lion" required> 证明自己，重新取胜</label>
+                    <label><input type="radio" name="q4" value="elephant"> 他人安慰，获得支持</label>
+                    <label><input type="radio" name="q4" value="zebra"> 群体陪伴，转移注意力</label>
+                    <label><input type="radio" name="q4" value="goat"> 独处空间，自我消化</label>
+                </div>
+                <div class="btn-group">
+                    <button class="nav-btn" onclick="prevQuestion()">上一题</button>
+                    <button class="nav-btn" onclick="showResult()">查看结果</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 结果展示 -->
+        <div class="result" id="result">
+            <h2 id="resultTitle">你的动物性格原型是：</h2>
+            <div class="animal-icon" id="animalIcon">🦁</div>
+            <div class="result-desc" id="resultDesc">
+                你是典型的狮子型人格，天生具备领导力，做事果断、有魄力，喜欢掌控局面，在团队中常成为核心人物。但有时会过于强势，忽略他人感受，建议多倾听团队成员的意见，学会柔性管理。
+            </div>
+            <div class="result-tip">
+                <strong>趣味小建议：</strong> 狮子型的你可以适当收敛锋芒，在坚持原则的同时，给身边人更多表达的空间，会让人际关系更融洽哦！
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentQuestion = 0;
+        const totalQuestions = document.querySelectorAll('.question').length;
+        const progressBar = document.getElementById('progressBar');
+        const result = document.getElementById('result');
+        const resultTitle = document.getElementById('resultTitle');
+        const animalIcon = document.getElementById('animalIcon');
+        const resultDesc = document.getElementById('resultDesc');
+
+        // 更新进度条
+        function updateProgress() {
+            const progress = ((currentQuestion + 1) / totalQuestions) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+
+        // 切换题目
+        function switchQuestion(index) {
+            document.querySelectorAll('.question').forEach((q, i) => {
+                q.classList.toggle('active', i === index);
+            });
+            currentQuestion = index;
+            updateProgress();
+        }
+
+        // 下一题
+        function nextQuestion() {
+            const currentQ = document.querySelector(`.question[data-index="${currentQuestion}"]`);
+            const selected = currentQ.querySelector('input[type="radio"]:checked');
+            if (!selected) {
+                alert('请选择一个答案后继续！');
+                return;
+            }
+            if (currentQuestion < totalQuestions - 1) {
+                switchQuestion(currentQuestion + 1);
+            }
+        }
+
+        // 上一题
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                switchQuestion(currentQuestion - 1);
+            }
+        }
+
+        // 计算结果并展示
+        function showResult() {
+            const currentQ = document.querySelector(`.question[data-index="${currentQuestion}"]`);
+            const selected = currentQ.querySelector('input[type="radio"]:checked');
+            if (!selected) {
+                alert('请选择一个答案后查看结果！');
+                return;
+            }
+
+            // 统计各动物得分
+            const scores = { lion: 0, elephant: 0, zebra: 0, goat: 0 };
+            document.querySelectorAll('.question').forEach(q => {
+                const ans = q.querySelector('input[type="radio"]:checked').value;
+                scores[ans]++;
+            });
+
+            // 确定最高得分的动物
+            let animalType = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+            
+            // 动物性格解读配置
+            const animalConfig = {
+                lion: {
+                    icon: '🦁',
+                    name: '狮子型',
+                    desc: '你是典型的狮子型人格，天生具备领导力，做事果断、有魄力，喜欢掌控局面，在团队中常成为核心人物。你有强烈的好胜心，面对挑战从不退缩，能快速做出决策并推动执行。但有时会过于强势，忽略他人感受，建议多倾听团队成员的意见，学会柔性管理。',
+                    tip: '狮子型的你可以适当收敛锋芒，在坚持原则的同时，给身边人更多表达的空间，会让人际关系更融洽哦！'
+                },
+                elephant: {
+                    icon: '🐘',
+                    name: '大象型',
+                    desc: '你是典型的大象型人格，性格稳重、踏实，是团队中的“定海神针”。你待人包容、有耐心，擅长倾听和化解矛盾，做事追求稳妥，不喜欢冒进。面对压力时能保持冷静，默默承担责任，但有时会因过于谨慎而错失机会，建议适当尝试突破舒适区。',
+                    tip: '大象型的你可以更勇敢地表达自己的想法，不必总是迁就他人，你的沉稳观点往往能给团队带来重要参考！'
+                },
+                zebra: {
+                    icon: '🦓',
+                    name: '斑马型',
+                    desc: '你是典型的斑马型人格，擅长融入群体，拥有良好的社交能力，能快速适应不同的环境和团队氛围。你重视人际关系的和谐，喜欢配合他人的节奏，是团队中的“润滑剂”。但有时会缺乏主见，容易随波逐流，建议在群体中保持独立思考的能力。',
+                    tip: '斑马型的你可以多尝试发表自己的观点，即使和他人不同，你的视角也能为团队带来新的思路哦！'
+                },
+                goat: {
+                    icon: '🐐',
+                    name: '山羊型',
+                    desc: '你是典型的山羊型人格，性格独立、坚韧，习惯靠自己的力量解决问题，不喜欢依赖他人。你有很强的意志力，面对困难能坚持不懈，适合从事需要专注和耐力的工作。但有时会过于孤僻，拒绝他人的帮助，建议学会适当示弱，借助团队的力量会更高效。',
+                    tip: '山羊型的你可以尝试打开心扉，接受他人的善意帮助，团队协作能让你在实现目标的路上走得更轻松哦！'
+                }
+            };
+
+            // 填充结果内容
+            const config = animalConfig[animalType];
+            resultTitle.innerText = `你的动物性格原型是：${config.name}`;
+            animalIcon.innerHTML = config.icon;
+            resultDesc.innerHTML = config.desc;
+            document.querySelector('.result-tip').innerHTML = `<strong>趣味小建议：</strong>${config.tip}`;
+
+            // 显示结果，隐藏题目
+            document.querySelector('.question-container').style.display = 'none';
+            result.style.display = 'block';
+            // 滚动到结果区域
+            result.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // 初始化进度条
+        updateProgress();
+    </script>
+</body>
+</html>
